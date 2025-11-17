@@ -1,68 +1,234 @@
-body {
+/* ====================== GERAL ====================== */
+* {
   margin: 0;
-  font-family: Arial;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
   background: #f3f6fb;
   color: #333;
+  line-height: 1.6;
 }
+
+/* ====================== HEADER ====================== */
 header {
   background: #ff934a;
   color: white;
   padding: 20px;
   display: flex;
   align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
+
 .logo {
   width: 60px;
   height: auto;
   margin-right: 15px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
+
+header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+/* BOTÃO INÍCIO no canto superior esquerdo */
+.btn-inicio {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.25);
+  color: white;
+  padding: 10px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1rem;
+  backdrop-filter: blur(5px);
+  border: 2px solid rgba(255,255,255,0.3);
+  transition: all 0.3s;
+  z-index: 10;
+}
+
+.btn-inicio:hover {
+  background: white;
+  color: #ff934a;
+  transform: translateY(-50%) scale(1.05);
+}
+
+/* Para o header ficar relativo e o botão ficar posicionado certo */
+header {
+  position: relative;
+}
+/* ====================== MAIN & CARD ====================== */
 main {
   max-width: 600px;
   margin: 30px auto;
+  padding: 0 15px;
 }
+
 .card {
   background: white;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
 }
-input[type=number]::-webkit-inner-spin-button { 
-    -webkit-appearance: none;
-    
+
+/* Títulos dentro do card */
+.card h2 {
+  color: #ff934a;
+  margin-bottom: 10px;
+  font-size: 1.6rem;
 }
-input {
-  width: 90%;
-  padding: 12px;
+
+.card h4 {
+  margin: 15px 0;
+  color: #e67e22;
+  font-weight: normal;
 }
+
+/* ====================== FORMULÁRIO ====================== */
 label {
   display: block;
-  margin-top: 15px;
+  margin-top: 20px;
+  margin-bottom: 8px;
   font-weight: bold;
+  color: #444;
 }
+
+input[type="number"],
 select {
   width: 100%;
-  padding: 12px;
-  margin-top: 5px;
+  padding: 14px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border 0.3s;
 }
+
+input[type="number"]:focus,
+select:focus {
+  outline: none;
+  border-color: #ff934a;
+  box-shadow: 0 0 0 3px rgba(255,147,74,0.2);
+}
+
+/* Remove setinhas do input number */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] { -moz-appearance: textfield; }
+
+/* ====================== BOTÃO PRINCIPAL ====================== */
 button {
   width: 100%;
-  padding: 14px;
+  padding: 16px;
   background: #ff934a;
   color: white;
   border: none;
-  margin-top: 20px;
-  border-radius: 6px;
+  margin-top: 25px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
   cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 10px rgba(255,147,74,0.3);
 }
+
+button:hover {
+  background: #e67e22;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255,147,74,0.4);
+}
+
+/* ====================== RESULTADO ====================== */
 .resultado {
-  margin-top: 20px;
-  padding: 15px;
+  margin-top: 25px;
+  padding: 20px;
+  border-radius: 8px;
   display: none;
-  background: #eaf1ff;
-  border-left: 5px solid #ff934a;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  background: #fff8f0;
+  border-left: 6px solid #ff934a;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
+
+/* ====================== PÁGINA HOME (botões grandes) ====================== */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.botoes-home {
+  display: flex;
+  gap: 40px;
+  margin-top: 50px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-home {
+  display: block;
+  width: 300px;
+  padding: 40px 20px;
+  border-radius: 16px;
+  border: solid #ff934a;;
+  text-decoration: none;
+  color:  #333;;
+  font-weight: bold;
+  font-size: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  transition: all 0.4s ease;
+}
+
+.btn-home.baixo {
+  background: white;
+  border-color: #ff934a;
+}
+
+.btn-home.alto {
+  background: white;
+  border-color: #ff934a;
+}
+
+.btn-home:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.btn-home small {
+  display: block;
+  font-size: 1rem;
+  margin-top: 10px;
+  opacity: 0.9;
+}
+
+/* ====================== FOOTER ====================== */
 footer {
   text-align: center;
-  padding: 20px;
-  color: #666;
+  padding: 30px;
+  color: #777;
+  font-size: 0.9rem;
+  margin-top: 50px;
+  background: #fff;
+  border-top: 1px solid #eee;
+}
+
+/* ====================== RESPONSIVO ====================== */
+@media (max-width: 640px) {
+  .botoes-home { gap: 25px; }
+  .btn-home { width: 90%; }
+  header h1 { font-size: 1.5rem; }
 }
