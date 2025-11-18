@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abertura Máxima Permitida - NR-12</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="btn-voltar" title="Voltar">←</a>
+    <img src="logo_nr12.png" class="logo" alt="Logo">
+    <h1>Distância Segura • NR-12</h1>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Abertura Máxima Permitida</h2>
+      <h4 >
+        Com base na distância de segurança (Sr)
+      </h4>
+      <p style="color:#555; margin-bottom:20px;">
+        NR-12 Anexo I – ISO 13857 (Tabelas 3 e 4)
+      </p>
+
+      <!-- 3 BOTÕES GRANDES -->
+      <div style="text-align:center; margin:30px 0;">
+        <button class="btn-tipo ativo" data-tipo="fenda">Fenda</button>
+        <button class="btn-tipo" data-tipo="quadrado">Quadrado</button>
+        <button class="btn-tipo" data-tipo="circular">Circular</button>
+      </div>
+
+      <label for="distancia">Distância de segurança (mm):</label>
+      <input type="number" id="distancia" placeholder="Ex: 120, 850, 200..." min="0">
+
+      <button id="btnCalcular">Calcular Abertura Máxima</button>
+
+      <div id="resultado" class="resultado"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Distância Segura • NR-12 • Aberturas Regulares</p>
+  </footer>
+
+  <script>
+    // TABELA OFICIAL NR-12 / ISO 13857 – Valores máximos de abertura por distância (Sr)
+    const tabelaMaxima = {
+      fenda: [
+        { sr: 2,    abertura: 4 },   // ponta do dedo
+        { sr: 10,   abertura: 6 },
+        { sr: 20,   abertura: 8 },   // mão
+        { sr: 80,   abertura: 10 },
+        { sr: 100,  abertura: 12 },
+        { sr: 120,  abertura: 20 },
+        //{ sr: 850,  abertura: 30 },  // braço até aqui
+        { sr: 850,  abertura: 120 }  // acima de 850 mm → até 120 mm (ou impedir totalmente)
+      ],
+      quadrado: [
+        { sr: 2,   abertura: 4 },
+        { sr: 5,   abertura: 6 },
+        { sr: 15,  abertura: 8 },
+        { sr: 25,  abertura: 10 },
+        { sr: 80,  abertura: 12 },
+        //{ sr: 120, abertura: 20 },
+        { sr: 120, abertura: 30 },
+        { sr: 200, abertura: 40 },
+        { sr: 850, abertura: 120 }
+      ],
+      circular: [
+        { sr: 2,   abertura: 4 },
+        //{ sr: 5,   abertura: 6 },
+        { sr: 5,   abertura: 8 },
+        { sr: 20,  abertura: 10 },
+        { sr: 80,  abertura: 12 },
+        //{ sr: 120, abertura: 20 },
+        //{ sr: 120, abertura: 30 },
+        { sr: 120, abertura: 40 },
+        { sr: 850, abertura: 120 }
+      ]
+    };
+
+    let tipoAtual = "fenda";
+
+    document.querySelectorAll(".btn-tipo").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".btn-tipo").forEach(b => b.classList.remove("ativo"));
+        btn.classList.add("ativo");
+        tipoAtual = btn.dataset.tipo;
+      });
+    });
+
+    function obterAberturaMaxima(sr, tipo) {
+      const dados = tabelaMaxima[tipo];
+      let maxAbertura = 0;
+
+      for (const linha of dados) {
+        if (sr >= linha.sr) {
+          maxAbertura = linha.abertura;
+        }
+      }
+      return maxAbertura;
+    }
+
+    document.getElementById("btnCalcular").addEventListener("click", () => {
+      const sr = parseFloat(document.getElementById("distancia").value);
+      const box = document.getElementById("resultado");
+
+      if (isNaN(sr) || sr < 0) {
+        box.innerHTML = "<strong style='color:#c00;'>Digite uma distância válida!</strong>";
+        box.style.display = "block";
+        return;
+      }
+
+      const aberturaMax = obterAberturaMaxima(sr, tipoAtual);
+
+      let msg = `<strong style="font-size:26px; color:#c0392b;">
+                   Abertura máxima permitida:<br>${aberturaMax} mm
+                 </strong><br><br>`;
+
+      if (sr >= 850 && aberturaMax >= 120) {
+        msg += "<strong style='color:#e67e22;'>Atenção:</strong> Acima de 850 mm, abertura > 120 mm deve impedir passagem total do corpo.";
+      } else if (aberturaMax >= 30) {
+        msg += "Permite até o braço (com restrição).";
+      } else if (aberturaMax >= 8) {
+        msg += "Permite até a mão/punho.";
+      } else {
+        msg += "Só permite ponta do dedo.";
+      }
+
+      box.innerHTML = msg;
+      box.style.display = "block";
+      box.style.backgroundColor = aberturaMax >= 30 ? "#fff0f0" : "#d5f5e3";
+    });
+  </script>
+
+  <style>
+    .btn-tipo {
+      padding: 16px 28px;
+      margin: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: 3px solid #ff934a;
+      background: white;
+      color: #ff934a;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-tipo.ativo, .btn-tipo:hover {
+      background: #ff934a;
+      color: white;
+    }
+    @media (max-width: 500px) { .btn-tipo { width: 100%; margin: 6px 0; } }
+  </style>
+</body>
+</html>

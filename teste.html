@@ -1,0 +1,47 @@
+Exemplo: O usuario digitou que o risco é de: 80 mm e Selecionou a abertura tipo Fenda
+
+Logo na tabela o programa vai mostrar que a abertura deve ser de: 10mm e o tipo é Mao!
+Fenda {
+  Ponta:
+    distancia: 2:4, 10:6,
+  Mao:
+    distancia: 20:8, 80:10, 100:12, 120:20, 850:30
+  Braço:
+    distancia: 850:40, 850:120  
+}
+
+[dentro da tabela é assim 
+Fenda{
+  Ponta:
+    Distancia: ABERTURA:DISTANCIA_DO_RISCO,
+}
+]
+
+// TABELA DE RSICO //
+
+Fenda {
+  Ponta:
+    distancia: 2:4, 10:6,
+  Mao:
+    distancia: 20:8, 80:10, 100:12, 120:20, 850:30
+  Braço:
+    distancia: 850:40, 850:120  
+}
+Quadrado {
+  Ponta:
+    distancia: 2:4, 5:6,
+  Mao:
+    distancia: 15:8, 25:10, 80:12, 120:20, 120:30
+  Braço:
+    distancia: 200:40, 850:120
+  
+}
+
+Circular {
+  Ponta:
+    distancia: 2:4, 5:6,
+  Mao:
+    distancia: 5:8, 20:10, 80:12, 120:20, 120:30
+  Braço:
+    distancia: 120:40, 850:120
+}
