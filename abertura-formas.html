@@ -17,8 +17,8 @@
   <main>
     <section class="card">
       <h2>Abertura Máxima Permitida</h2>
-      <h4 >
-        Com base na distância de segurança (Sr)
+      <h4>
+        Baseado na distância de segurança (Sr)
       </h4>
       <p style="color:#555; margin-bottom:20px;">
         NR-12 Anexo I – ISO 13857 (Tabelas 3 e 4)
@@ -32,7 +32,18 @@
       </div>
 
       <label for="distancia">Distância de segurança (mm):</label>
-      <input type="number" id="distancia" placeholder="Ex: 120, 850, 200..." min="0">
+      <input type="number" id="distancia" placeholder="Ex: 200, 850, 120..." min="0">
+
+      <!-- CHECKBOX SÓ PARA FENDA -->
+      <div id="fenda-opcao" style="display:none; margin:20px 0; padding:15px; background:#fff8f0; border-radius:10px; border-left:5px solid #ff934a;">
+        <label style="display:flex; align-items:center; cursor:pointer; font-weight:bold; color:#c0392b;">
+          <input type="checkbox" id="regra-especial" style="width:20px; height:20px; margin-right:12px;">
+          A fenda tem comprimento ≤ 65 mm<br>
+          <small style="font-weight:normal; color:#e67e22; margin-left:32px;">
+            (Polegar atua como limitador → permite abertura até 30 mm com apenas 200 mm de distância)
+          </small>
+        </label>
+      </div>
 
       <button id="btnCalcular">Calcular Abertura Máxima</button>
 
@@ -45,94 +56,103 @@
   </footer>
 
   <script>
-    // TABELA OFICIAL NR-12 / ISO 13857 – Valores máximos de abertura por distância (Sr)
-    const tabelaMaxima = {
-      fenda: [
-        { sr: 2,    abertura: 4 },   // ponta do dedo
-        { sr: 10,   abertura: 6 },
-        { sr: 20,   abertura: 8 },   // mão
-        { sr: 80,   abertura: 10 },
-        { sr: 100,  abertura: 12 },
-        { sr: 120,  abertura: 20 },
-        //{ sr: 850,  abertura: 30 },  // braço até aqui
-        { sr: 850,  abertura: 120 }  // acima de 850 mm → até 120 mm (ou impedir totalmente)
-      ],
-      quadrado: [
-        { sr: 2,   abertura: 4 },
-        { sr: 5,   abertura: 6 },
-        { sr: 15,  abertura: 8 },
-        { sr: 25,  abertura: 10 },
-        { sr: 80,  abertura: 12 },
-        //{ sr: 120, abertura: 20 },
-        { sr: 120, abertura: 30 },
-        { sr: 200, abertura: 40 },
-        { sr: 850, abertura: 120 }
-      ],
-      circular: [
-        { sr: 2,   abertura: 4 },
-        //{ sr: 5,   abertura: 6 },
-        { sr: 5,   abertura: 8 },
-        { sr: 20,  abertura: 10 },
-        { sr: 80,  abertura: 12 },
-        //{ sr: 120, abertura: 20 },
-        //{ sr: 120, abertura: 30 },
-        { sr: 120, abertura: 40 },
-        { sr: 850, abertura: 120 }
-      ]
-    };
-
     let tipoAtual = "fenda";
 
+    // Troca de tipo
     document.querySelectorAll(".btn-tipo").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".btn-tipo").forEach(b => b.classList.remove("ativo"));
         btn.classList.add("ativo");
         tipoAtual = btn.dataset.tipo;
+        atualizarVisibilidadeFenda();
       });
     });
 
-    function obterAberturaMaxima(sr, tipo) {
-      const dados = tabelaMaxima[tipo];
-      let maxAbertura = 0;
+    // Atualiza visibilidade do checkbox
+    function atualizarVisibilidadeFenda() {
+      const sr = parseFloat(document.getElementById("distancia").value) || 0;
+      const mostrar = (tipoAtual === "fenda" && sr >= 100); // aparece a partir de 100 mm
+      document.getElementById("fenda-opcao").style.display = mostrar ? "block" : "none";
+    }
 
-      for (const linha of dados) {
-        if (sr >= linha.sr) {
-          maxAbertura = linha.abertura;
+    document.getElementById("distancia").addEventListener("input", atualizarVisibilidadeFenda);
+
+    // Cálculo principal
+    function calcularAberturaMax(sr, tipo, usarRegraEspecial) {
+      if (tipo === "fenda") {
+        if (usarRegraEspecial && sr >= 200) {
+          return 30; // REGRA ESPECIAL APLICADA!
         }
+        if (sr >= 850) return 120;
+        if (sr >= 120) return 20;
+        if (sr >= 100) return 12;
+        if (sr >= 80) return 10;
+        if (sr >= 20) return 8;
+        if (sr >= 10) return 6;
+        if (sr >= 2) return 4;
+        return 4;
       }
-      return maxAbertura;
+      if (tipo === "quadrado") {
+        if (sr >= 850) return 120;
+        if (sr >= 200) return 40;
+        if (sr >= 120) return 30;
+        if (sr >= 80) return 12;
+        if (sr >= 25) return 10;
+        if (sr >= 15) return 8;
+        if (sr >= 5) return 6;
+        return 4;
+      }
+      if (tipo === "circular") {
+        if (sr >= 850) return 120;
+        if (sr >= 120) return 40;
+        if (sr >= 80) return 12;
+        if (sr >= 20) return 10;
+        if (sr >= 5) return 8;
+        return 4;
+      }
     }
 
     document.getElementById("btnCalcular").addEventListener("click", () => {
-      const sr = parseFloat(document.getElementById("distancia").value);
+      const sr = parseFloat(document.getElementById("distancia").value) || 0;
+      const usarRegraEspecial = tipoAtual === "fenda" && document.getElementById("regra-especial").checked;
       const box = document.getElementById("resultado");
 
-      if (isNaN(sr) || sr < 0) {
+      if (sr < 0) {
         box.innerHTML = "<strong style='color:#c00;'>Digite uma distância válida!</strong>";
         box.style.display = "block";
         return;
       }
 
-      const aberturaMax = obterAberturaMaxima(sr, tipoAtual);
+      const aberturaMax = calcularAberturaMax(sr, tipoAtual, usarRegraEspecial);
 
       let msg = `<strong style="font-size:26px; color:#c0392b;">
-                   Abertura máxima permitida:<br>${aberturaMax} mm
+                   Abertura máxima permitida: ${aberturaMax} mm
                  </strong><br><br>`;
 
-      if (sr >= 850 && aberturaMax >= 120) {
-        msg += "<strong style='color:#e67e22;'>Atenção:</strong> Acima de 850 mm, abertura > 120 mm deve impedir passagem total do corpo.";
+      if (usarRegraEspecial && aberturaMax === 30) {
+        msg += `<div style="background:#d5f5e3; padding:15px; border-radius:10px; border-left:5px solid #27ae60;">
+                  <strong style="color:#27ae60;">REGRA ESPECIAL APLICADA!</strong><br>
+                  Fenda ≤ 65 mm de comprimento → abertura até 30 mm permitida com apenas 200 mm de distância
+                </div><br>`;
+      }
+
+      if (aberturaMax >= 120) {
+        msg += "Atenção: acima de 120 mm → impedir passagem total do corpo.";
       } else if (aberturaMax >= 30) {
-        msg += "Permite até o braço (com restrição).";
+        msg += "Permite alcance do braço.";
       } else if (aberturaMax >= 8) {
-        msg += "Permite até a mão/punho.";
+        msg += "Permite alcance da mão/punho.";
       } else {
         msg += "Só permite ponta do dedo.";
       }
 
       box.innerHTML = msg;
       box.style.display = "block";
-      box.style.backgroundColor = aberturaMax >= 30 ? "#fff0f0" : "#d5f5e3";
+      box.style.backgroundColor = usarRegraEspecial ? "#d5f5e3" : (aberturaMax >= 30 ? "#ffe6e6" : "#f0f8ff");
     });
+
+    // Inicializa
+    atualizarVisibilidadeFenda();
   </script>
 
   <style>
